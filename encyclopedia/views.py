@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.http import Http404
 
 from . import util
 
@@ -9,5 +10,14 @@ def index(request):
     })
 
 def entry(request, entry):
-    return render(request, 'encyclopedia/')
+    data = util.get_entry(entry)
+    print(data)
+    if data is None:
+        raise Http404("The entry does not exists")
+    return render(request, 'encyclopedia/entry.html', {
+        'title': entry,
+        'data': data,
+    })
+
+
 
