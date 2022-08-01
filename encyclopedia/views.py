@@ -11,7 +11,7 @@ def index(request):
 
 def entry(request, entry):
     data = util.get_entry(entry)
-    print(data)
+    data = util.convertMdHtml(data)
     if data is None:
         raise Http404("The entry does not exists")
     return render(request, 'encyclopedia/entry.html', {
