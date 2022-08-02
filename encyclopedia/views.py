@@ -1,3 +1,5 @@
+import random
+
 from ast import arg
 from cProfile import label
 from importlib.machinery import WindowsRegistryFinder
@@ -55,10 +57,11 @@ def newPage(request):
     form = newPageForm(request.POST)
     if form.is_valid():
         form = form.cleaned_data
-        entryTitle, content = form['entryTitle'].lower(), form['content']
+        entryTitle, content = form['entryTitle'], form['content']
         allEntries = [entry.lower() for entry in util.list_entries()]
-        if entryTitle in allEntries:
+        if entryTitle.lower() in allEntries:
             return HttpResponseBadRequest("Entry already exists")
+        content = f'#{entryTitle}\n{content}'
         util.save_entry(entryTitle, content)
         return HttpResponseRedirect(reverse('entry', args=[entryTitle]))
     return HttpResponseBadRequest("Please enter all the field")
@@ -75,3 +78,8 @@ def edit(request):
     util.save_entry(entry, content)
     return HttpResponseRedirect(reverse('entry', args=[entry]))
 
+
+def randomPage(request):
+    allEntries = util.list_entries()
+    randomEntry = allEntries[random.randint(0, len(allEntries) - 1)]
+    return HttpResponseRedirect(reverse('entry', args=[randomEntry]))
