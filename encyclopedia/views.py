@@ -1,5 +1,6 @@
 from django.shortcuts import render
-from django.http import Http404
+from django.http import Http404, HttpResponseRedirect
+from django.urls import reverse
 
 from . import util
 
@@ -19,5 +20,17 @@ def entry(request, entry):
         'data': data,
     })
 
-
-
+def search(request):
+    query = request.GET['q'].strip().lower()
+    allEntries = util.list_entries()
+    possibleResult = []
+    for entry in allEntries:
+        if entry.lower() == query:
+            return HttpResponseRedirect(reverse('entry', args=[entry]))
+        if query in entry:
+            possibleResult.append(entry)
+    return render(request, "encyclopedia/search.html", {
+        "entries": possibleResult,
+    })
+        
+    # return render(request, "encyclopedia/search.html")
