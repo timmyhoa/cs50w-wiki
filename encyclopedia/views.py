@@ -19,9 +19,9 @@ def index(request):
 
 def entry(request, entry):
     data = util.get_entry(entry)
-    data = util.convertMdHtml(data)
     if data is None:
         raise Http404("The entry does not exists")
+    data = util.convertMdHtml(data)
     return render(request, 'encyclopedia/entry.html', {
         'title': entry,
         'data': data,
@@ -34,7 +34,7 @@ def search(request):
     for entry in allEntries:
         if entry.lower() == query:
             return HttpResponseRedirect(reverse('entry', args=[entry]))
-        if query in entry:
+        if query in entry.lower():
             possibleResult.append(entry)
     return render(request, "encyclopedia/search.html", {
         "entries": possibleResult,
