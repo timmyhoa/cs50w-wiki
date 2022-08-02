@@ -55,15 +55,23 @@ def newPage(request):
     form = newPageForm(request.POST)
     if form.is_valid():
         form = form.cleaned_data
-        entryTitle, content = form['entryTitle'], form['content']
-        allEntries = util.list_entries()
+        entryTitle, content = form['entryTitle'].lower(), form['content']
+        allEntries = [entry.lower() for entry in util.list_entries()]
         if entryTitle in allEntries:
             return HttpResponseBadRequest("Entry already exists")
-        with open(f'./entries/{entryTitle}.md', 'w') as f:
-            print(f'# {entryTitle}', file=f)
-            print(f'{content}', file=f)
+        util.save_entry(entryTitle, content)
         return HttpResponseRedirect(reverse('entry', args=[entryTitle]))
+    return HttpResponseBadRequest("Please enter all the field")
 
+def edit(request):
+    if request.method == 'GET':
+        entry = request.GET['entry']
+        data = util.get_entry(entry)
+        return render(request, "encyclopedia/edit.html", {
+            'entry': entry,
+            'content': data,
+        })
+    entry, content = request.POST['entry'], request.POST['content']
+    util.save_entry(entry, content)
+    return HttpResponseRedirect(reverse('entry', args=[entry]))
 
-
-    

@@ -5,5 +5,11 @@
 {% endblock %}
 
 {% block body %}
-    {{ data|safe }}
+    <div>
+        {{ data|safe }}
+    </div>
+    <form action="{% url 'edit' %}" method="get">
+        <input type="hidden" name="entry" value="{{ title }}">
+        <input type="submit" value="Edit this entry">
+    </form>
 {% endblock %}
